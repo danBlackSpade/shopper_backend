@@ -2,8 +2,8 @@
 
 
 import { Request, Response } from 'express';
-import { calculateDistance } from '../services/GoogleMapsService';
-import Ride from '../models/Ride';
+import { calculateDistance } from '../services/googleMaps.service';
+import Ride from '../models/ride.model';
 
 export const estimateRide = async (req: Request, res: Response) => {
   try {

@@ -5,11 +5,18 @@ WORKDIR /app
 COPY package*.json ./
 
 RUN npm install
-RUN npm install -g ts-node
+# RUN npm install -g ts-node
+# RUN npm install --save-dev typescript ts-node
+
 
 
 COPY . .
 
-EXPOSE 8080
+RUN npm run build
 
-CMD ["ts-node", "src/index.ts"]
+EXPOSE 8080
+#test
+
+
+# CMD ["ts-node", "src/index.ts", "sh", "-c", "npm run seed && npm start"]
+CMD npm run seed && npm start

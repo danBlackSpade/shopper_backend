@@ -12,8 +12,8 @@
 // export default router;
 
 import { Router } from 'express';
-import rideRoutes from './routes/ride';
-import { estimateRide } from './controllers/RideController';
+import rideRoutes from './routes/ride.rotes';
+import { estimateRide } from './controllers/ride.controller';
 import { asyncHandler } from './utils/asyncHandler';
 
 const router = Router();
