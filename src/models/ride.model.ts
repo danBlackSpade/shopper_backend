@@ -4,7 +4,7 @@ export interface IRide extends Document {
   userId: string;
   origin: string;
   destination: string;
-  distance: number;
+  distance: number; // google uses meters
   price: number;
   driverId: string;
   driverName: string;

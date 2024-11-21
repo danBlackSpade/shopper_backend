@@ -22,7 +22,7 @@ const seedDrivers = async () => {
         description: 'Motorista simpático, mas errou o caminho 3 vezes. O carro cheira a donuts.'
       },
       fee: 2.50,
-      minKm: 1
+      minMeters: 1000
     },
     {
       id: 2,
@@ -34,7 +34,7 @@ const seedDrivers = async () => {
         description: 'Que viagem incrível! O carro é um show à partee o motorista, apesar de ter uma cara de poucos amigos, foi super gente boa. Recomendo!'
       },
       fee: 5.00,
-      minKm: 5
+      minMeters: 5000
     },
     {
       id: 3,
@@ -46,7 +46,7 @@ const seedDrivers = async () => {
         description: 'Serviço impecável! O motorista é a própria definição de classe e o carro é simplesmente magnífico. Uma experiência digna de um agente secreto.'
       },
       fee: 10.00,
-      minKm: 10
+      minMeters: 10000
     },
 
   ]
@@ -60,7 +60,7 @@ const seedDrivers = async () => {
       console.log('Drivers deleted')
 
       await Driver.insertMany(drivers)
-      console.log('Drivers created')
+      console.log('@@ Drivers created')
 
       await mongoose.disconnect()
       console.log('MongoDB disconnected')

@@ -5,17 +5,13 @@ import mongoose, { Schema, Document } from "mongoose";
 export interface IDriver extends Document {
   name: string;
   description: string;
-  car: {
-    model: string;
-    color: string;
-    year: number;
-  },
+  car: string
   rating: {
     value: number;
     description: string;
   },
   fee: number;
-  minKm: number;
+  minMeters: number;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
@@ -30,7 +26,7 @@ const DriverSchema: Schema = new Schema({
     description: { type: String, required: true },
   },
   fee: { type: Number, required: true },
-  minKm: { type: Number, required: true },
+  minMeters: { type: Number, required: true },
 }, {
   timestamps: true
 })
