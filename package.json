@@ -7,7 +7,7 @@
     "build": "tsc",
     "dev": "nodemon ./src/index.ts",
     "start": "node ./dist/index.js",
-    "seed": "ts-node ./src/scripts/seedDrivers.ts"
+    "seed": "ts-node ./src/scripts/seedUsers.ts"
   },
   "keywords": [],
   "author": "",

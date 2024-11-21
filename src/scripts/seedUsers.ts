@@ -1,19 +1,20 @@
 
 import mongoose from "mongoose"
-import Driver  from "../models/user.model"
+import User  from "../models/user.model"
 import dotenv from 'dotenv'
 
 dotenv.config()
 
 const mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/shopper-rides'
 
-const seedDrivers = async () => {
+const seedUsers = async () => {
 
 
     // add data
-  const drivers = [
+  const users = [
     {
-      id: 1,
+      // id: 1,
+      role: 'driver',
       name: 'Homer Simpson',
       description: 'Olá! Sou o Homer, seu motorista camarada! Relaxe e aproveite o passeio, com direito a rosquinhas e boas risadas (e talvez alguns desvios).',
       car: 'Plymouth Valiant',
@@ -25,7 +26,8 @@ const seedDrivers = async () => {
       minMeters: 1000
     },
     {
-      id: 2,
+      // id: 2,
+      role: 'driver',
       name: 'Dominic Toretto',
       description: 'Ei, aqui é o Dom. Pode entrar, vou te levar com segurança e rapidez ao seu destino. Só não mexa no rádio, a playlist é sagrada.',
       car: 'Dodge Charger R/T 1970',
@@ -37,7 +39,8 @@ const seedDrivers = async () => {
       minMeters: 5000
     },
     {
-      id: 3,
+      // id: 3,
+      role: 'driver',
       name: 'James Bond',
       description: 'Boa noite, sou James Bond. À seu dispor para um passeio suave e discreto. Aperte o cinto e aproveite a viagem.',
       car: 'Aston Martin DB5 clássico',
@@ -48,6 +51,12 @@ const seedDrivers = async () => {
       fee: 10.00,
       minMeters: 10000
     },
+    {
+      // id: 4,
+      role: 'customer',
+      name: 'Passageiro Tio Patinhas',
+
+    },
 
   ]
 
@@ -56,11 +65,11 @@ const seedDrivers = async () => {
         await mongoose.connect(mongoUri)
         console.log('MongoDB connected')
 
-      await Driver.deleteMany({})
-      console.log('Drivers deleted')
+      await User.deleteMany({})
+      console.log('Users deleted')
 
-      await Driver.insertMany(drivers)
-      console.log('@@ Drivers created')
+      await User.insertMany(users)
+      console.log('@@ Users created')
 
       await mongoose.disconnect()
       console.log('MongoDB disconnected')
@@ -75,7 +84,7 @@ const seedDrivers = async () => {
   await connectWithRetry()
 }
 
-seedDrivers().catch((error) => {
-  console.error('Error seeding drivers:', error)
+seedUsers().catch((error) => {
+  console.error('Error seeding users:', error)
 })
 

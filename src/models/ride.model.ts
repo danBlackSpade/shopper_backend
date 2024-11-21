@@ -1,6 +1,6 @@
 import mongoose, { Schema, Document } from "mongoose"
 
-export interface IRide extends Document {
+export interface IUser extends Document {
   userId: string;
   origin: string;
   destination: string;
@@ -14,7 +14,7 @@ export interface IRide extends Document {
   deletedAt: Date | null;
 }
 
-const RideSchema: Schema = new Schema({
+const UserSchema: Schema = new Schema({
   userId: { type: String, required: true },
     origin: { type: String, required: true },
     destination: { type: String, required: true },
@@ -30,5 +30,5 @@ const RideSchema: Schema = new Schema({
 
 }, { timestamps: true })
 
-export default mongoose.model<IRide>('Ride', RideSchema)
+export default mongoose.model<IUser>('Ride', UserSchema)
 

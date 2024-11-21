@@ -12,19 +12,24 @@
 // export default router;
 
 import { Router } from 'express';
-import rideRoutes from './routes/ride.rotes';
-import { estimateRide } from './controllers/ride.controller';
+import rideRoutes from './routes/ride.routes';
+import { estimateRide, confirmRide } from './controllers/ride.controller';
 import { asyncHandler } from './utils/asyncHandler';
+import User from './models/user.model';
 
 const router = Router();
 
-router.use('/ride', rideRoutes);
+// rides
+// router.use('/ride', rideRoutes);
 router.post('/ride/estimate', asyncHandler(estimateRide));
+router.patch('/ride/confirm', asyncHandler(confirmRide));
 
 
 //test
-router.get('/', (req, res) => {
-  res.json({ message: 'Hello, World!' });
+router.get('/', async (req, res) => {
+  res.status(200).json({
+    users: await User.find()
+  });
 });
 
 export default router;

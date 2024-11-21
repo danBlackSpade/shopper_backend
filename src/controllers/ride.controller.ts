@@ -3,8 +3,9 @@
 
 import { Request, Response } from 'express';
 import { calculateDistance } from '../services/googleMaps.service';
-import Driver from '../models/driver.model';
+import User from '../models/user.model';
 import Ride from '../models/ride.model';
+import mongoose from 'mongoose';
 
 export const estimateRide = async (req: Request, res: Response) => {
   try {
@@ -12,14 +13,14 @@ export const estimateRide = async (req: Request, res: Response) => {
 
     // Validações
     if (!userId || !origin || !destination || origin === destination) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         error_description: 'Os dados fornecidos no corpo da requisição são inválidos',
         error_code: 'INVALID_DATA'
       });
     }
 
     const distanceData = await calculateDistance(origin, destination)
-    const allDrivers = await Driver.find({
+    const allDrivers = await User.find({
       // available: true,
       // location: {
       //   $near: {
@@ -30,20 +31,24 @@ export const estimateRide = async (req: Request, res: Response) => {
       //     $maxDistance: 50000, // 50km
       //   },
       // },
+      role: 'driver'
     })
 
     console.log('alldrivers',allDrivers)
-    
 
     const availableDrivers = allDrivers.filter((driver) => {
-      return driver.minMeters <= distanceData.distanceValue
+      if (driver.minMeters && driver.minMeters <= distanceData.distanceValue) {
+        return driver.minMeters <= distanceData.distanceValue
+      }
     })
     .map((d) => {
-      const formattedPrice = (d.fee * (distanceData.distanceValue / 1000))
-        .toFixed(2)
-        .replace('.', ',')
-        .replace(/\B(?=(\d{3})+(?!\d))/g, '.'); // thousands separator with points
-
+      let formattedPrice: string = '';
+      if (d.fee) {
+        formattedPrice = (d.fee * (distanceData.distanceValue / 1000))
+          .toFixed(2)
+          .replace('.', ',')
+          .replace(/\B(?=(\d{3})+(?!\d))/g, '.'); // thousands separator with points
+      }
       console.log('Formatted Price:', formattedPrice);
 
       // console.log(driver)
@@ -86,6 +91,58 @@ export const estimateRide = async (req: Request, res: Response) => {
       res.status(500).json({ error: 'Unknown error occurred' })
 
     }
-    // res.status(500).json({ error: error.message });
   }
-};
+}
+
+export const confirmRide = async (req: Request, res: Response) => {
+  try {
+    const { customer_id, origin, destination, distance, duration, driver, value } = req.body;
+    console.log(req.body, driver._id)
+    // Validações
+    // if (!userId) {
+    //   return res.status(400).json({ message: 'ID Invalid input' });
+    // }
+    if (!origin || !destination || origin == destination || !customer_id) {
+      return res.status(400).json({
+        error_code: 'INVALID_DATA',
+        error_description: 'Os dados fornecidos no corpo da requisição são inválidos'
+      })
+    }
+
+    const selectedDriver = await User.findById(driver._id)
+    console.log(selectedDriver)
+
+    if (!selectedDriver || selectedDriver.role !== 'driver') {
+      return res.status(400).json({
+        error_code: 'INVALID_DATA',
+        error_description: 'Motorista não encontrado'
+      })
+    } else {
+      if (selectedDriver.minMeters && selectedDriver.minMeters > distance) {
+        return res.status(400).json({
+          error_code: 'INVALID_DATA',
+          error_description: 'Quilometragem invakida para o motorista'
+        })
+      }
+    }
+    return res.status(200).json({
+      success: true,
+      description: 'Operação realizada com sucesso',
+      customer_id,
+      origin,
+      destination,
+      distance,
+      duration,
+      driver,
+      value
+    })
+
+  } catch (error) {
+    if (error instanceof Error) {
+      res.status(500).json({ error: error.message })
+    } else {
+      res.status(500).json({ error: 'Unknown error occurred' })
+    }
+
+  }
+}
