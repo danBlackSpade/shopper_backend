@@ -3,7 +3,7 @@
 
 import { Request, Response } from 'express';
 import { calculateDistance } from '../services/googleMaps.service';
-import User from '../models/user.model';
+import User, { IUser } from '../models/user.model';
 import Ride from '../models/ride.model';
 import mongoose from 'mongoose';
 
@@ -99,7 +99,8 @@ export const confirmRide = async (req: Request, res: Response) => {
       })
     }
 
-    const selectedDriver = await User.findById(driver._id)
+    // const selectedDriver = await User.findById(driver.id)
+    const selectedDriver = await User.findOne({ id: driver.id })
     // console.log(selectedDriver)
 
     if (!selectedDriver || selectedDriver.role !== 'driver') {
@@ -123,7 +124,7 @@ export const confirmRide = async (req: Request, res: Response) => {
       distance,
       duration,
       value: value,
-      driverId: driver._id,
+      driverId: driver.id,
       driverName: driver.name,
       customerId: customer_id,
       status: 'confirmed'
@@ -136,9 +137,9 @@ export const confirmRide = async (req: Request, res: Response) => {
       // driver_minMeters: selectedDriver.minMeters,
       // value: value
     })
-    
+
     // save Ride
-    
+
     await newRide.save().catch((err) => {
       console.error('Error saving ride:', err)
       return res.status(500).json({
@@ -172,24 +173,25 @@ export const confirmRide = async (req: Request, res: Response) => {
 }
 
 export const getCustomerRides = async (req: Request, res: Response) => {
-  
-// ● O id do usuário não pode estar em branco. 
-// ● Se um id de motorista for informado, ele precisa ser um id válido. 
- 
-// Após as validações ele: 
-// ● Buscar as viagens realizadas pelo usuário, ordenando da mais 
-// recente para a mais antiga. 
-// ● Pode receber um query parameter “driver_id” que, se informado, 
-// deve filtrar apenas as viagens realizadas pelo usuário com este 
-// motorista. 
 
-// Ela irá retornar: 
-// ● Uma lista com as viagens realizadas. 
+// ● O id do usuário não pode estar em branco.
+// ● Se um id de motorista for informado, ele precisa ser um id válido.
+
+// Após as validações ele:
+// ● Buscar as viagens realizadas pelo usuário, ordenando da mais
+// recente para a mais antiga.
+// ● Pode receber um query parameter “driver_id” que, se informado,
+// deve filtrar apenas as viagens realizadas pelo usuário com este
+// motorista.
+
+// Ela irá retornar:
+// ● Uma lista com as viagens realizadas.
   try {
     const { customer_id, driver_id } = req.params;
     // const customer_id = req.params.customer_id
     // const driver_id = req.query.driver_id
-    const customer = await User.findById(customer_id)
+    // const customer = await User.findById(customer_id)
+    const customer = await User.findOne({ id: customer_id })
 
     if (!customer_id || customer_id === '' || !customer) {
       return res.status(400).json({
@@ -197,15 +199,16 @@ export const getCustomerRides = async (req: Request, res: Response) => {
         error_description: 'ID  user inválido'
       })
     }
-    
-    const driver = await User.findById(driver_id)
+
+    // const driver = await User.findById(driver_id)
+    const driver = await User.findOne({ id: driver_id })
     console.log(driver)
     if (!driver && driver_id) {
       return res.status(400).json({
         error_code: 'INVALID_DRIVER',
         error_description: 'Motorista inválido'
       })
-    } 
+    }
 
     const filters: any = { customerId: customer_id }
     if (driver_id) {
@@ -216,7 +219,7 @@ export const getCustomerRides = async (req: Request, res: Response) => {
     const rides = await Ride.find(filters).sort({ createdAt: -1 })
     const renamedRides = rides.map(function(r) {
       return {
-        id: r._id,
+        id: r.id,
         date: r.createdAt,
         origin: r.origin,
         destination: r.destination,

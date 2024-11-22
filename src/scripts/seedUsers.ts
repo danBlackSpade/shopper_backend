@@ -5,7 +5,9 @@ import dotenv from 'dotenv'
 
 dotenv.config()
 
-const mongoUri = process.env.MONGO_URI || 'mongodb://mongo:27017/shopper-rides'
+// const mongoUri = process.env.MONGO_URI || 'mongodb://mongo:27017/shopper-rides'
+//local
+const mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/shopper-rides'
 
 const seedUsers = async () => {
 
@@ -13,7 +15,7 @@ const seedUsers = async () => {
     // add data
   const users = [
     {
-      // id: 1,
+      id: 1,
       role: 'driver',
       name: 'Homer Simpson',
       description: 'Olá! Sou o Homer, seu motorista camarada! Relaxe e aproveite o passeio, com direito a rosquinhas e boas risadas (e talvez alguns desvios).',
@@ -26,7 +28,7 @@ const seedUsers = async () => {
       minMeters: 1000
     },
     {
-      // id: 2,
+      id: 2,
       role: 'driver',
       name: 'Dominic Toretto',
       description: 'Ei, aqui é o Dom. Pode entrar, vou te levar com segurança e rapidez ao seu destino. Só não mexa no rádio, a playlist é sagrada.',
@@ -39,7 +41,7 @@ const seedUsers = async () => {
       minMeters: 5000
     },
     {
-      // id: 3,
+      id: 3,
       role: 'driver',
       name: 'James Bond',
       description: 'Boa noite, sou James Bond. À seu dispor para um passeio suave e discreto. Aperte o cinto e aproveite a viagem.',
@@ -52,7 +54,7 @@ const seedUsers = async () => {
       minMeters: 10000
     },
     {
-      // id: 4,
+      id: 4,
       role: 'customer',
       name: 'Passageiro Tio Patinhas',
 
