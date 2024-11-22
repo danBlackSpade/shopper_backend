@@ -15,6 +15,7 @@ import { Router } from 'express';
 import { estimateRide, confirmRide, getCustomerRides } from './controllers/ride.controller';
 import { asyncHandler } from './utils/asyncHandler';
 import User from './models/user.model';
+import UserController from './controllers/user.controller';
 
 const router = Router();
 
@@ -23,9 +24,11 @@ const router = Router();
 router.post('/ride/estimate', asyncHandler(estimateRide));
 router.patch('/ride/confirm', asyncHandler(confirmRide));
 router.get('/ride/:customer_id/:driver_id?', asyncHandler(getCustomerRides));
+router.post('/user/create', asyncHandler(UserController.create));
+router.get('/users', asyncHandler(UserController.getAll));
 
 
-//test
+// test
 router.get('/', async (req, res) => {
   res.status(200).json({
     users: await User.find()
