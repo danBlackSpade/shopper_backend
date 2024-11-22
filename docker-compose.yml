@@ -12,8 +12,10 @@ services:
       - MONGO_URI=mongodb://mongo:27017/shopper-rides
     depends_on:
       - mongo
-    volumes:
-      - .:/app
+    # volumes:
+    #   - ./src:/app/src
+    #   - ./package.json:/app/package.json
+    #   - ./tsconfig.json:/app/tsconfig.json
 
   mongo:
     image: mongo
@@ -22,17 +24,6 @@ services:
       - "27017:27017"
     volumes:
       - mongo-data:/data/db
-
-  # seeder:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   container_name: shopper_seeder
-  #   command: "ts-node /app/src/scripts/seedDrivers.ts"
-  #   depends_on:
-  #     - mongo
-  #   volumes:
-  #     - .:/app
 
 volumes:
   mongo-data: {}

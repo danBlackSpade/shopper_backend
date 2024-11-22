@@ -97,7 +97,7 @@ export const estimateRide = async (req: Request, res: Response) => {
 export const confirmRide = async (req: Request, res: Response) => {
   try {
     const { customer_id, origin, destination, distance, duration, driver, value } = req.body;
-    console.log(req.body, driver._id)
+    // console.log(req.body, driver._id)
     // Validações
     // if (!userId) {
     //   return res.status(400).json({ message: 'ID Invalid input' });
@@ -110,7 +110,7 @@ export const confirmRide = async (req: Request, res: Response) => {
     }
 
     const selectedDriver = await User.findById(driver._id)
-    console.log(selectedDriver)
+    // console.log(selectedDriver)
 
     if (!selectedDriver || selectedDriver.role !== 'driver') {
       return res.status(400).json({
@@ -125,6 +125,40 @@ export const confirmRide = async (req: Request, res: Response) => {
         })
       }
     }
+
+
+    const newRide = new Ride({
+      origin,
+      destination,
+      distance,
+      duration,
+      value: value,
+      driverId: driver._id,
+      driverName: driver.name,
+      customerId: customer_id,
+      status: 'confirmed'
+      // driver_id: selectedDriver._id,
+      // driver_name: selectedDriver.name,
+      // driver_description: selectedDriver.description,
+      // driver_car: selectedDriver.car,
+      // driver_rating: selectedDriver.rating,
+      // driver_fee: selectedDriver.fee,
+      // driver_minMeters: selectedDriver.minMeters,
+      // value: value
+    })
+    
+    // save Ride
+    
+    await newRide.save().catch((err) => {
+      console.error('Error saving ride:', err)
+      return res.status(500).json({
+        error_code: 'INTERNAL_SERVER_ERROR',
+        error_description: 'Erro ao salvar a viagem'
+      })
+    })
+    console.log(Ride.find())
+
+
     return res.status(200).json({
       success: true,
       description: 'Operação realizada com sucesso',
@@ -144,5 +178,78 @@ export const confirmRide = async (req: Request, res: Response) => {
       res.status(500).json({ error: 'Unknown error occurred' })
     }
 
+  }
+}
+
+export const getCustomerRides = async (req: Request, res: Response) => {
+  
+// ● O id do usuário não pode estar em branco. 
+// ● Se um id de motorista for informado, ele precisa ser um id válido. 
+ 
+// Após as validações ele: 
+// ● Buscar as viagens realizadas pelo usuário, ordenando da mais 
+// recente para a mais antiga. 
+// ● Pode receber um query parameter “driver_id” que, se informado, 
+// deve filtrar apenas as viagens realizadas pelo usuário com este 
+// motorista. 
+
+// Ela irá retornar: 
+// ● Uma lista com as viagens realizadas. 
+  try {
+    // const { customer_id, driver_id } = req.params;
+    const customer_id = req.params.customer_id
+    const driver_id = req.query.driver_id
+    const customer = await User.findById(customer_id)
+
+    if (!customer_id || customer_id === '' || !customer) {
+      return res.status(400).json({
+        error_code: 'INVALID_DATA',
+        error_description: 'ID  user inválido'
+      })
+    }
+
+    if (driver_id && !mongoose.Types.ObjectId.isValid(driver_id as string)) {
+      return res.status(400).json({
+        error_code: 'INVALID_DATA',
+        error_description: 'ID  driver inválido'
+      })
+    } 
+
+    const filters: any = { customerId: customer_id }
+    if (driver_id) {
+      filters.driverId = driver_id
+    }
+
+
+    const rides = await Ride.find(filters).sort({ createdAt: -1 })
+    const renamedRides = rides.map(function(r) {
+      return {
+        id: r._id,
+        date: r.createdAt,
+        origin: r.origin,
+        destination: r.destination,
+        distance: r.distance,
+        duration: r.duration,
+        value: r.value,
+        driver: {
+          id: r.driverId,
+          name: r.driverName
+        }
+      }
+    })
+
+    return res.status(200).json({
+      description: 'Operação realizada com sucesso',
+      customer_id,
+      rides: renamedRides
+    });
+
+
+  } catch (error) {
+    if (error instanceof Error) {
+      res.status(500).json({ error: error.message })
+    } else {
+      res.status(500).json({ error: 'Unknown error occurred' })
+    }
   }
 }

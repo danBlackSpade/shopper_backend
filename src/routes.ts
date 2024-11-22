@@ -12,8 +12,7 @@
 // export default router;
 
 import { Router } from 'express';
-import rideRoutes from './routes/ride.routes';
-import { estimateRide, confirmRide } from './controllers/ride.controller';
+import { estimateRide, confirmRide, getCustomerRides } from './controllers/ride.controller';
 import { asyncHandler } from './utils/asyncHandler';
 import User from './models/user.model';
 
@@ -23,6 +22,7 @@ const router = Router();
 // router.use('/ride', rideRoutes);
 router.post('/ride/estimate', asyncHandler(estimateRide));
 router.patch('/ride/confirm', asyncHandler(confirmRide));
+router.get('/ride/:customer_id', asyncHandler(getCustomerRides));
 
 
 //test

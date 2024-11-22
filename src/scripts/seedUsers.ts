@@ -5,7 +5,7 @@ import dotenv from 'dotenv'
 
 dotenv.config()
 
-const mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/shopper-rides'
+const mongoUri = process.env.MONGO_URI || 'mongodb://mongo:27017/shopper-rides'
 
 const seedUsers = async () => {
 

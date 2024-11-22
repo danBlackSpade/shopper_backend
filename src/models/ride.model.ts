@@ -1,11 +1,13 @@
-import mongoose, { Schema, Document } from "mongoose"
+import mongoose, { Schema, Document, Types } from "mongoose"
 
-export interface IUser extends Document {
-  userId: string;
+export interface IRide extends Document {
+  _id: Types.ObjectId;
+  customerId: string;
   origin: string;
   destination: string;
+  duration: string,
   distance: number; // google uses meters
-  price: number;
+  value: number;
   driverId: string;
   driverName: string;
   status: 'pending' | 'confirmed' | 'completed';
@@ -14,21 +16,22 @@ export interface IUser extends Document {
   deletedAt: Date | null;
 }
 
-const UserSchema: Schema = new Schema({
-  userId: { type: String, required: true },
-    origin: { type: String, required: true },
-    destination: { type: String, required: true },
-    distance: { type: Number, required: true },
-    price: { type: Number, required: true },
-    driverId: { type: String, required: true },
-    driverName: { type: String, required: true },
-    status: {
-      type: String,
-      enum: ['pending', 'confirmed', 'completed'],
-      default: 'pending'
-    },
+const RideSchema: Schema = new Schema({
+  customerId: { type: String, required: true },
+  origin: { type: String, required: true },
+  destination: { type: String, required: true },
+  duration: { type: String, required: true },
+  distance: { type: Number, required: true },
+  value: { type: Number, required: true },
+  driverId: { type: String, required: true },
+  driverName: { type: String, required: true },
+  status: {
+    type: String,
+    enum: ['pending', 'confirmed', 'completed'],
+    default: 'pending'
+  },
 
 }, { timestamps: true })
 
-export default mongoose.model<IUser>('Ride', UserSchema)
+export default mongoose.model<IRide>('Ride', RideSchema)
 
