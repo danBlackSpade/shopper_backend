@@ -22,7 +22,7 @@ const router = Router();
 // router.use('/ride', rideRoutes);
 router.post('/ride/estimate', asyncHandler(estimateRide));
 router.patch('/ride/confirm', asyncHandler(confirmRide));
-router.get('/ride/:customer_id', asyncHandler(getCustomerRides));
+router.get('/ride/:customer_id/:driver_id?', asyncHandler(getCustomerRides));
 
 
 //test

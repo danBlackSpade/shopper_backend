@@ -21,16 +21,6 @@ export const estimateRide = async (req: Request, res: Response) => {
 
     const distanceData = await calculateDistance(origin, destination)
     const allDrivers = await User.find({
-      // available: true,
-      // location: {
-      //   $near: {
-      //     $geometry: {
-      //       type: 'Point',
-      //       coordinates: [destination.longitude, destination.latitude],
-      //     },
-      //     $maxDistance: 50000, // 50km
-      //   },
-      // },
       role: 'driver'
     })
 
@@ -47,7 +37,7 @@ export const estimateRide = async (req: Request, res: Response) => {
         formattedPrice = (d.fee * (distanceData.distanceValue / 1000))
           .toFixed(2)
           .replace('.', ',')
-          .replace(/\B(?=(\d{3})+(?!\d))/g, '.'); // thousands separator with points
+          .replace(/\B(?=(\d{3})+(?!\d))/g, '.'); // thousands with points
       }
       console.log('Formatted Price:', formattedPrice);
 
@@ -196,9 +186,9 @@ export const getCustomerRides = async (req: Request, res: Response) => {
 // Ela irá retornar: 
 // ● Uma lista com as viagens realizadas. 
   try {
-    // const { customer_id, driver_id } = req.params;
-    const customer_id = req.params.customer_id
-    const driver_id = req.query.driver_id
+    const { customer_id, driver_id } = req.params;
+    // const customer_id = req.params.customer_id
+    // const driver_id = req.query.driver_id
     const customer = await User.findById(customer_id)
 
     if (!customer_id || customer_id === '' || !customer) {
@@ -207,11 +197,13 @@ export const getCustomerRides = async (req: Request, res: Response) => {
         error_description: 'ID  user inválido'
       })
     }
-
-    if (driver_id && !mongoose.Types.ObjectId.isValid(driver_id as string)) {
+    
+    const driver = await User.findById(driver_id)
+    console.log(driver)
+    if (!driver && driver_id) {
       return res.status(400).json({
-        error_code: 'INVALID_DATA',
-        error_description: 'ID  driver inválido'
+        error_code: 'INVALID_DRIVER',
+        error_description: 'Motorista inválido'
       })
     } 
 
@@ -237,6 +229,13 @@ export const getCustomerRides = async (req: Request, res: Response) => {
         }
       }
     })
+
+    if (renamedRides.length === 0) {
+      return res.status(404).json({
+        error_code: 'NO_RIDES_FOUND',
+        error_description: 'Nenhum registro encontrado'
+      })
+    }
 
     return res.status(200).json({
       description: 'Operação realizada com sucesso',
