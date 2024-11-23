@@ -9,7 +9,7 @@ export interface IRide extends Document {
   distance: string;
   durationValue: number;
   distanceValue: number;
-  value: number;
+  value: string;
   driver: {
     id: string;
     name: string;
@@ -28,7 +28,7 @@ const RideSchema: Schema = new Schema({
   distance: { type: String, required: true },
   durationValue: { type: Number, required: true },
   distanceValue: { type: Number, required: true },
-  value: { type: Number, required: true },
+  value: { type: String, required: true },
   driver: {
     id: { type: String, required: true },
     name: { type: String, required: true },
