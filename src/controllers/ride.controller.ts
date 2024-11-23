@@ -86,7 +86,7 @@ export const estimateRide = async (req: Request, res: Response) => {
 
 export const confirmRide = async (req: Request, res: Response) => {
   try {
-    const { customer_id, origin, destination, distance, duration, driver, value } = req.body;
+    const { customer_id, origin, destination, distance, duration, driver, value, durationValue, distanceValue } = req.body;
     // console.log(req.body, driver._id)
     // Validações
     // if (!userId) {
@@ -98,7 +98,8 @@ export const confirmRide = async (req: Request, res: Response) => {
         error_description: 'Os dados fornecidos no corpo da requisição são inválidos'
       })
     }
-
+    console.log('driver', driver)
+    
     // const selectedDriver = await User.findById(driver.id)
     const selectedDriver = await User.findOne({ id: driver.id })
     // console.log(selectedDriver)
@@ -123,43 +124,44 @@ export const confirmRide = async (req: Request, res: Response) => {
       destination,
       distance,
       duration,
+      durationValue,
+      distanceValue,
       value: value,
-      driverId: driver.id,
-      driverName: driver.name,
+      driver: {
+        id: driver.id,
+        name: driver.name,
+      },
       customerId: customer_id,
       status: 'confirmed'
-      // driver_id: selectedDriver._id,
-      // driver_name: selectedDriver.name,
-      // driver_description: selectedDriver.description,
-      // driver_car: selectedDriver.car,
-      // driver_rating: selectedDriver.rating,
-      // driver_fee: selectedDriver.fee,
-      // driver_minMeters: selectedDriver.minMeters,
-      // value: value
+
     })
 
     // save Ride
 
-    await newRide.save().catch((err) => {
+    const rideCreated: any = await newRide.save().catch((err) => {
       console.error('Error saving ride:', err)
       return res.status(500).json({
         error_code: 'INTERNAL_SERVER_ERROR',
         error_description: 'Erro ao salvar a viagem'
       })
     })
-    console.log(Ride.find())
-
-
+    console.log('@@@@@@@@@@@@' + rideCreated)
+    
     return res.status(200).json({
       success: true,
       description: 'Operação realizada com sucesso',
-      customer_id,
-      origin,
-      destination,
-      distance,
-      duration,
-      driver,
-      value
+      customerId: rideCreated.customerId,
+      origin: rideCreated.origin,
+      destination: rideCreated.destination,
+      duration: rideCreated.duration,
+      distance: rideCreated.distance,
+      value: rideCreated.value,
+      driver: {
+          id: rideCreated.driver.id,
+          name: rideCreated.driver.name
+      },
+      status: "confirmed",
+      _id: rideCreated._id,
     })
 
   } catch (error) {
@@ -168,29 +170,13 @@ export const confirmRide = async (req: Request, res: Response) => {
     } else {
       res.status(500).json({ error: 'Unknown error occurred' })
     }
-
   }
 }
 
 export const getCustomerRides = async (req: Request, res: Response) => {
-
-// ● O id do usuário não pode estar em branco.
-// ● Se um id de motorista for informado, ele precisa ser um id válido.
-
-// Após as validações ele:
-// ● Buscar as viagens realizadas pelo usuário, ordenando da mais
-// recente para a mais antiga.
-// ● Pode receber um query parameter “driver_id” que, se informado,
-// deve filtrar apenas as viagens realizadas pelo usuário com este
-// motorista.
-
-// Ela irá retornar:
-// ● Uma lista com as viagens realizadas.
   try {
     const { customer_id, driver_id } = req.params;
     // const customer_id = req.params.customer_id
-    // const driver_id = req.query.driver_id
-    // const customer = await User.findById(customer_id)
     const customer = await User.findOne({ id: customer_id })
 
     if (!customer_id || customer_id === '' || !customer) {
@@ -215,7 +201,6 @@ export const getCustomerRides = async (req: Request, res: Response) => {
       filters.driverId = driver_id
     }
 
-
     const rides = await Ride.find(filters).sort({ createdAt: -1 })
     const renamedRides = rides.map(function(r) {
       return {
@@ -227,8 +212,8 @@ export const getCustomerRides = async (req: Request, res: Response) => {
         duration: r.duration,
         value: r.value,
         driver: {
-          id: r.driverId,
-          name: r.driverName
+          id: r.driver.id,
+          name: r.driver.name
         }
       }
     })

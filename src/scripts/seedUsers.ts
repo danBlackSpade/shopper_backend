@@ -20,6 +20,8 @@ const seedUsers = async () => {
 
       await User.deleteMany({})
       console.log('Users deleted')
+      await IdCounter.deleteMany({})
+      console.log('IdCounter deleted')
 
       await User.create({
         id: await getNextSequence('users'),

@@ -53,6 +53,18 @@ class UserController {
     }
   }
 
+  static async getDrivers(req: Request, res: Response): Promise<Response> {
+    try {
+      const drivers = await User.find({ role: 'driver' });
+      return res.status(200).json(drivers);
+    } catch (error) {
+      return res.status(500).json({
+        error_description: 'Erro ao buscar motoristas',
+        error_code: 'INTERNAL_SERVER_ERROR'
+      });
+    }
+  }
+
 
 }
 

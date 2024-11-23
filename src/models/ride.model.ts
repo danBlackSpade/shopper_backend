@@ -6,10 +6,14 @@ export interface IRide extends Document {
   origin: string;
   destination: string;
   duration: string,
-  distance: number; // google uses meters
+  distance: string;
+  durationValue: number;
+  distanceValue: number;
   value: number;
-  driverId: string;
-  driverName: string;
+  driver: {
+    id: string;
+    name: string;
+  },
   status: 'pending' | 'confirmed' | 'completed';
   createdAt: Date;
   updatedAt: Date;
@@ -21,17 +25,23 @@ const RideSchema: Schema = new Schema({
   origin: { type: String, required: true },
   destination: { type: String, required: true },
   duration: { type: String, required: true },
-  distance: { type: Number, required: true },
+  distance: { type: String, required: true },
+  durationValue: { type: Number, required: true },
+  distanceValue: { type: Number, required: true },
   value: { type: Number, required: true },
-  driverId: { type: String, required: true },
-  driverName: { type: String, required: true },
+  driver: {
+    id: { type: String, required: true },
+    name: { type: String, required: true },
+  },
   status: {
     type: String,
     enum: ['pending', 'confirmed', 'completed'],
     default: 'pending'
   },
 
-}, { timestamps: true })
+}, { timestamps: true }
+  
+)
 
 export default mongoose.model<IRide>('Ride', RideSchema)
 

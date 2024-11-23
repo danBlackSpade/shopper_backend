@@ -2,6 +2,8 @@ import express from 'express'
 import dotenv from 'dotenv'
 import mongoose, { ConnectOptions } from 'mongoose';
 import routes from './routes'
+import cors from 'cors'
+
 
 dotenv.config();
 
@@ -9,6 +11,11 @@ const app = express();
 const port = process.env.PORT || 8080
 // const mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/shopper-rides'
 const mongoUri = process.env.MONGO_URI || 'mongodb://mongo:27017/shopper-rides'
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  methods: ['GET', 'POST', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 
 
 mongoose.connect(mongoUri)

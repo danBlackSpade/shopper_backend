@@ -26,6 +26,7 @@ router.patch('/ride/confirm', asyncHandler(confirmRide));
 router.get('/ride/:customer_id/:driver_id?', asyncHandler(getCustomerRides));
 router.post('/user/create', asyncHandler(UserController.create));
 router.get('/users', asyncHandler(UserController.getAll));
+router.get('/drivers', asyncHandler(UserController.getDrivers));
 
 
 // test
