@@ -118,7 +118,6 @@ export const confirmRide = async (req: Request, res: Response) => {
       }
     }
 
-
     const newRide = new Ride({
       origin,
       destination,
@@ -136,8 +135,6 @@ export const confirmRide = async (req: Request, res: Response) => {
 
     })
 
-    // save Ride
-
     const rideCreated: any = await newRide.save().catch((err) => {
       console.error('Error saving ride:', err)
       return res.status(500).json({
@@ -145,7 +142,6 @@ export const confirmRide = async (req: Request, res: Response) => {
         error_description: 'Erro ao salvar a viagem'
       })
     })
-    console.log('@@@@@@@@@@@@' + rideCreated)
     
     return res.status(200).json({
       success: true,
@@ -188,20 +184,24 @@ export const getCustomerRides = async (req: Request, res: Response) => {
 
     // const driver = await User.findById(driver_id)
     const driver = await User.findOne({ id: driver_id })
-    console.log(driver)
+    // console.log(driver)
     if (!driver && driver_id) {
       return res.status(400).json({
         error_code: 'INVALID_DRIVER',
         error_description: 'Motorista inválido'
       })
     }
-
-    const filters: any = { customerId: customer_id }
+    let filters: any = { customerId: parseInt(customer_id) }
     if (driver_id) {
-      filters.driverId = driver_id
-    }
 
-    const rides = await Ride.find(filters).sort({ createdAt: -1 })
+      console.log(' filters', filters)
+      filters.driverId =  parseInt(driver_id)
+      // filters = { ...filters, 'driver.id': driver_id }
+    }
+    console.log(driver_id, filters)
+
+    const rides = await Ride.find({ 'customerId': filters.customerId, 'driver.id': filters.driverId }).sort({ createdAt: -1 })
+    console.log('rides', rides)
     const renamedRides = rides.map(function(r) {
       return {
         id: r.id,

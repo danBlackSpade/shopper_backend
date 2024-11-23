@@ -2,7 +2,7 @@ import mongoose, { Schema, Document, Types } from "mongoose"
 
 export interface IRide extends Document {
   _id: Types.ObjectId;
-  customerId: string;
+  customerId: number;
   origin: string;
   destination: string;
   duration: string,
@@ -11,7 +11,7 @@ export interface IRide extends Document {
   distanceValue: number;
   value: string;
   driver: {
-    id: string;
+    id: number;
     name: string;
   },
   status: 'pending' | 'confirmed' | 'completed';
@@ -21,7 +21,7 @@ export interface IRide extends Document {
 }
 
 const RideSchema: Schema = new Schema({
-  customerId: { type: String, required: true },
+  customerId: { type: Number, required: true },
   origin: { type: String, required: true },
   destination: { type: String, required: true },
   duration: { type: String, required: true },
@@ -30,11 +30,11 @@ const RideSchema: Schema = new Schema({
   distanceValue: { type: Number, required: true },
   value: { type: String, required: true },
   driver: {
-    id: { type: String, required: true },
+    id: { type: Number, required: true },
     name: { type: String, required: true },
   },
   status: {
-    type: String,
+    type: Number,
     enum: ['pending', 'confirmed', 'completed'],
     default: 'pending'
   },
