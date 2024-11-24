@@ -34,7 +34,7 @@ const RideSchema: Schema = new Schema({
     name: { type: String, required: true },
   },
   status: {
-    type: Number,
+    type: String,
     enum: ['pending', 'confirmed', 'completed'],
     default: 'pending'
   },

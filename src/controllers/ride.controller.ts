@@ -127,14 +127,14 @@ export const confirmRide = async (req: Request, res: Response) => {
       distanceValue,
       value: value,
       driver: {
-        id: driver.id,
+        id: parseInt(driver.id),
         name: driver.name,
       },
-      customerId: customer_id,
+      customerId: parseInt(customer_id),
       status: 'confirmed'
 
     })
-
+    console.log('newRide', newRide)
     const rideCreated: any = await newRide.save().catch((err) => {
       console.error('Error saving ride:', err)
       return res.status(500).json({
@@ -142,7 +142,7 @@ export const confirmRide = async (req: Request, res: Response) => {
         error_description: 'Erro ao salvar a viagem'
       })
     })
-    
+    console.log('rideCreated', rideCreated)
     return res.status(200).json({
       success: true,
       description: 'Operação realizada com sucesso',
@@ -182,27 +182,20 @@ export const getCustomerRides = async (req: Request, res: Response) => {
       })
     }
 
-    // const driver = await User.findById(driver_id)
-    const driver = await User.findOne({ id: driver_id })
-    // console.log(driver)
-    if (!driver && driver_id) {
-      return res.status(400).json({
-        error_code: 'INVALID_DRIVER',
-        error_description: 'Motorista inválido'
-      })
-    }
-    let filters: any = { customerId: parseInt(customer_id) }
+    let rides;
     if (driver_id) {
-
-      console.log(' filters', filters)
-      filters.driverId =  parseInt(driver_id)
-      // filters = { ...filters, 'driver.id': driver_id }
+      rides = await Ride.find({ 'customerId': customer_id, 'driver.id': driver_id }).sort({ createdAt: -1 });
+      if (!rides.length) {
+        return res.status(404).json({
+          error_code: 'NO_RIDES_FOUND',
+          error_description: 'Nenhum registro encontrado'
+        })
+      }
+    } else {
+        rides = await Ride.find({ customerId: customer_id }).sort({ createdAt: -1 });
     }
-    console.log(driver_id, filters)
 
-    const rides = await Ride.find({ 'customerId': filters.customerId, 'driver.id': filters.driverId }).sort({ createdAt: -1 })
-    console.log('rides', rides)
-    const renamedRides = rides.map(function(r) {
+    const renamedRides = rides?.map(function(r) {
       return {
         id: r.id,
         date: r.createdAt,
@@ -218,12 +211,9 @@ export const getCustomerRides = async (req: Request, res: Response) => {
       }
     })
 
-    if (renamedRides.length === 0) {
-      return res.status(404).json({
-        error_code: 'NO_RIDES_FOUND',
-        error_description: 'Nenhum registro encontrado'
-      })
-    }
+    console.log('renamedRides', renamedRides)
+
+   
 
     return res.status(200).json({
       description: 'Operação realizada com sucesso',
@@ -234,7 +224,7 @@ export const getCustomerRides = async (req: Request, res: Response) => {
 
   } catch (error) {
     if (error instanceof Error) {
-      res.status(500).json({ error: error.message })
+      res.status(500).json({ error: error.message, error_ride_controller: 'Error in getCustomerRides' })
     } else {
       res.status(500).json({ error: 'Unknown error occurred' })
     }
